@@ -1,13 +1,14 @@
 from IOOperations import IOOperations
 
+olumlu =[]
+olumsuz = []
+notr = []
 
-b = "Hello, World!"
-print(b[2:5])
-
-"This would create first object of Employee class"
-emp1 = IOOperations("Zara", 2000)
+emp1 = IOOperations()
 "This would create second object of Employee class"
-emp2 = IOOperations("Manni", 5000)
-emp1.displayEmployee()
-emp2.displayEmployee()
-print("Total Employee %d" % IOOperations.empCount)
+emp2 = IOOperations()
+
+emp1.duygulariAyir(olumlu, olumsuz, notr)
+print(len(olumlu))
+print(len(olumsuz))
+print(len(notr))
