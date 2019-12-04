@@ -5,23 +5,11 @@ from starter import first
 import csv
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.metrics import accuracy_score
+import sys
 
 
 
-stopwords = []		
 
-with open("stopwords.csv") as csv_file:
-	csv_reader = csv.reader(csv_file, delimiter=',')
-	line_count = 0
-	for row in csv_reader:
-		if len(row) != 0:
-			stopwords.append(row[0])
-		line_count+=1
-
-parser_obj = first()
-max_ent_obj = MaxEnt(1)
-naive_obj = NaiveBayes()
-svm_obj = SVM(1)
 
 
 def result(cls):
@@ -89,37 +77,57 @@ def predict_without_naive_bayes(features):
 	vote_result = vote_without_naive_bayes(r2[0],r3[0])
 	return vote_result
 
+inputName    = input("Enter input file name: ")
+resultName    = input("Enter result file name: ")
+
+
+
+stopwords = []		
+
 comments = []
 labels = []
-with open('training.csv') as csv_file:
+
+with open(inputName) as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter=',')
 	line_count = 0
 	for row in csv_reader:
-		if line_count >= 7200:
-			break
 		comments.append(row[3])
-		if row[2] == 'Sad':
-			labels.append(-1)
-		elif row[2] == 'Happy':
-			labels.append(1)
-		else:
-			labels.append(0)
 		line_count += 1
-	    
+
+
+
 y_pred = []
 count = 0
 
-for comment in comments:
-	for word in comment.split(" "):
-		for stop in stopwords:
-			if word == stop:
-				comment.replace(word,"")
-	features = parser_obj.extract_features(comment)
-	result = predict_without_naive_bayes(features)
-	y_pred.append(result)
-	print(str(count)+" : "+str(result))
-	count+=1
-print(confusion_matrix(labels,y_pred))
-print(classification_report(labels,y_pred))
+parser_obj = first()
+max_ent_obj = MaxEnt(1)
+naive_obj = NaiveBayes()
+svm_obj = SVM(1)
+
+
+
+with open(resultName, mode='w') as result_file:
+    result_writer = csv.writer(result_file, delimiter='\t', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    for comment in comments:
+    	features = parser_obj.extract_features(comment)
+    	result = predict_without_naive_bayes(features)
+    	classi = '' 
+    	if result == -1:
+    		y_pred.append('Sad')
+    		classi = 'Sad'
+    		print(str(count)+" : Sad")
+    		
+    	elif result == 0:
+    		y_pred.append('Neutral')
+    		classi = 'Neutral'
+    		print(str(count)+" : Neutral")
+    		
+    	elif result == 1:
+    		y_pred.append('Happy')
+    		classi = 'Happy'
+    		print(str(count)+" : Happy")
+    	result_writer.writerow([comment, classi])
+    	count+=1
+
 
 
